@@ -37,18 +37,19 @@ const SEED_PRODUCTS = [
 ].map((item) => mapItem(item));
 
 function mapItem(item) {
-  const rawComm = item["Comissão"] ?? item.Comissão ?? "";
+  // Suporta tanto campos em inglês (webhook n8n) quanto em português (Google Sheets)
+  const rawComm = item.commissionRate ?? item["Comissão"] ?? item.Comissão ?? "";
   const commNum = parseFloat(rawComm);
   const commLabel = !isNaN(commNum)
     ? commNum > 1 ? `R$ ${commNum.toFixed(2)}` : `${(commNum * 100).toFixed(0)}%`
     : String(rawComm);
   return {
-    id:         String(item["Id"] ?? item.Id ?? Date.now()),
-    name:       item["Nome"]    ?? item.Nome    ?? "Produto sem nome",
-    price:      String(item["Preço"]  ?? item.Preço  ?? ""),
-    img:        item["Imagem"]  ?? item.Imagem  ?? "",
-    link:       item["Link"]    ?? item.Link    ?? "",
-    sales:      Number(item["Vendas"] ?? item.Vendas ?? 0),
+    id:         String(item.itemId ?? item["Id"] ?? item.Id ?? Date.now()),
+    name:       item.productName ?? item["Nome"] ?? item.Nome ?? "Produto sem nome",
+    price:      String(item.price ?? item["Preço"] ?? item.Preço ?? ""),
+    img:        item.imageUrl ?? item["Imagem"] ?? item.Imagem ?? "",
+    link:       item.offerLink ?? item.productLink ?? item["Link"] ?? item.Link ?? "",
+    sales:      Number(item.sales ?? item["Vendas"] ?? item.Vendas ?? 0),
     commission: commLabel,
     status:     "pending",
     aiText:     "",
