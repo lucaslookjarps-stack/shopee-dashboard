@@ -1,40 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
 
-// ─── DADOS INICIAIS (do seu webhook) ──────────────────────────────────────────
-const SEED_PRODUCTS = [
-  { Id: 46758100928, Nome: "Kit 8 Peças Body + Mijão Conjunto Menina Menino Manga Longa Infantil", Preço: "49.98", Comissão: "0.16", Vendas: 734, Imagem: "https://cf.shopee.com.br/file/br-11134207-820md-mmj0fakyvj0nc5", Link: "https://s.shopee.com.br/60PT3X1oh7" },
-  { Id: 22497501506, Nome: "Kit Enxoval Infantil 10 Peças Body Manga Longa E Mijao De Bebê Menino E Menina", Preço: "69.98", Comissão: "0.14", Vendas: 1408, Imagem: "https://cf.shopee.com.br/file/br-11134207-820l7-mnf0waellddt57", Link: "https://s.shopee.com.br/1BKDIeKDUg" },
-  { Id: 58251839038, Nome: "Kit Carrinhos Patrulha Canina Com 9 Carros De Fricção Brinquedo Infantil Premium", Preço: "55.09", Comissão: "0.13", Vendas: 865, Imagem: "https://cf.shopee.com.br/file/br-11134207-81z1k-mi5cd2od4c9212", Link: "https://s.shopee.com.br/4LHF6F37Ox" },
-  { Id: 29292773277, Nome: "Kit Macacão Manta Cobertor Saída Maternidade Tricot Bolinhas Menino Menina Bebê", Preço: "79.9", Comissão: "0.07", Vendas: 889, Imagem: "https://cf.shopee.com.br/file/br-11134207-81z1k-mfo9qbttjojpff", Link: "https://s.shopee.com.br/5AqM404zNq" },
-  { Id: 58250144056, Nome: "Caminhão Dinossauro Engolidos de Carrinhos - com Kit de 6 e 4 Carrinhos", Preço: "74.5", Comissão: "0.13", Vendas: 632, Imagem: "https://cf.shopee.com.br/file/br-11134207-81z1k-mffs07cp08hxfe", Link: "https://s.shopee.com.br/80AXSyp9y2" },
-  { Id: 58255619413, Nome: "Kit 2 peças Macacão 100% algodão canelado liso linha luxo Menino ou Menina", Preço: "59.9", Comissão: "0.08", Vendas: 1345, Imagem: "https://cf.shopee.com.br/file/sg-11134201-81zvi-mmmf2pjh8kqw5b", Link: "https://s.shopee.com.br/18FuVOerV" },
-  { Id: 23598387487, Nome: "Tapete para Banheiro de Secagem Rápida e Super Absorvente Ideal para Chuveiro", Preço: "12.8", Comissão: "0.09", Vendas: 6394, Imagem: "https://cf.shopee.com.br/file/br-11134207-7r98o-m8hpl5yislwxf7", Link: "https://s.shopee.com.br/4AxosA8nOh" },
-  { Id: 20407976291, Nome: "Kit 2 Macacão Pelúcia Bebe Inverno De Pelo Carneiro Menina", Preço: "59.99", Comissão: "0.07", Vendas: 1977, Imagem: "https://cf.shopee.com.br/file/br-11134207-81ztc-mk8g93w2qfpdce", Link: "https://s.shopee.com.br/AAF21BlxEJ" },
-  { Id: 22098874077, Nome: "Areia Higiênica Biodegradável Catbio 12 Kg (3 pacotes de 4 kg) - Max Clean", Preço: "133.9", Comissão: "0.07", Vendas: 8572, Imagem: "https://cf.shopee.com.br/file/br-11134207-81z1k-mdxnq2dguwht29", Link: "https://s.shopee.com.br/1LddUxJa8s" },
-  { Id: 58204723156, Nome: "Kit 48 Carrinhos com Fricção de Lata Metálica Coloridos - Caixa Container que Vira Pista", Preço: "74.13", Comissão: "0.16", Vendas: 390, Imagem: "https://cf.shopee.com.br/file/sg-11134201-825zq-mkcnt2h0ni87b9", Link: "https://s.shopee.com.br/8pjeSVlzH9" },
-  { Id: 23799355108, Nome: "Caminhão Dinossauro Dino Engole Carrinhos Brinquedo Infantil Menino Kit Presente", Preço: "66.99", Comissão: "0.13", Vendas: 1233, Imagem: "https://cf.shopee.com.br/file/sg-11134201-8260n-ml4ey8056v45bd", Link: "https://s.shopee.com.br/5AqM5lzwi2" },
-  { Id: 22996121313, Nome: "Areia Catbio Biodegradável 4 Kg - Max Clean - Grãos Finos", Preço: "46.9", Comissão: "0.07", Vendas: 24367, Imagem: "https://cf.shopee.com.br/file/sg-11134201-824i5-meirt0lhhr0m31", Link: "https://s.shopee.com.br/AKYQ8MxYpZ" },
-  { Id: 50804162499, Nome: "Kit 6 Tapete De Banheiro 45x70cm Pezinho Piso Luxo Atoalhado 100% Algodão Premium", Preço: "32.9", Comissão: "0.08", Vendas: 4010, Imagem: "https://cf.shopee.com.br/file/br-11134207-81zuc-mkvlaxqrnmde44", Link: "https://s.shopee.com.br/40eOfr9Qje" },
-  { Id: 51006015979, Nome: "Kit 400 Toalhas Umedecidas Chameguinho Baby Lenço Umedecido Infantil Higiene Bebê", Preço: "23.9", Comissão: "0.14", Vendas: 2133, Imagem: "https://cf.shopee.com.br/file/br-11134207-81ztc-mkij2fr51lhfd4", Link: "https://s.shopee.com.br/AKYSDUlJtI" },
-  { Id: 20299321793, Nome: "1/2/3 Suporte De Shampoo Preto Organizador Alta qualidade Prateleira De Banheiro", Preço: "19", Comissão: "0.13", Vendas: 9771, Imagem: "https://cf.shopee.com.br/file/br-11134211-81zum-mko49067dddu01", Link: "https://s.shopee.com.br/2BCkUUGPRz" },
-  { Id: 23394415893, Nome: "1080° Torneira Giratória de Braço Robótico Chuveiro Banheiro Cozinha Dois Modos", Preço: "28.98", Comissão: "0.1", Vendas: 3676, Imagem: "https://cf.shopee.com.br/file/br-11134207-81z1k-mev5hs72r2mac1", Link: "https://s.shopee.com.br/5q62rE2S17" },
-  { Id: 58205832467, Nome: "Escova de Silicone 2 em 1 para Vaso Sanitário - Base de Banheiro Alta Eficiência", Preço: "14.95", Comissão: "0.13", Vendas: 5618, Imagem: "https://cf.shopee.com.br/file/sg-11134201-8260s-ml5a6t2qwff3f8", Link: "https://s.shopee.com.br/4VafGm7Wij" },
-  { Id: 12395259440, Nome: "Toalha De Cabelo Banho Mágica Para Secar Cabelo De Microfibra Grossa Touca Pós Banheiro", Preço: "10.59", Comissão: "0.19", Vendas: 7569, Imagem: "https://cf.shopee.com.br/file/c61d78be5c8b276952877cdea2728e81", Link: "https://s.shopee.com.br/3LOhsdBy5K" },
-  { Id: 58201523970, Nome: "Tapete de Banheiro Absorvente Antiderrapante Secagem Rápida", Preço: "11.99", Comissão: "0.07", Vendas: 19101, Imagem: "https://cf.shopee.com.br/file/sg-11134201-8260b-mm4q3xn8yayw0f", Link: "https://s.shopee.com.br/gNwhjM7UY" },
-  { Id: 22394343234, Nome: "Kit 4 Rolos de Sacos de Lixo 10L – 160 Unidades | Neutraliza Odores | Ideal para Pia e Banheiro", Preço: "29.8", Comissão: "0.18", Vendas: 7200, Imagem: "https://cf.shopee.com.br/file/br-11134207-81z1k-mh5k70jhwveo39", Link: "https://s.shopee.com.br/4LHF4T8A3g" },
-  { Id: 22498213091, Nome: "Ducha Higiênica Para Banheiro Completa Luxo Inox 1,2m Chuveirinho Privada", Preço: "19.9", Comissão: "0.19", Vendas: 9723, Imagem: "https://cf.shopee.com.br/file/br-11134207-820le-mnl66469oy6a1c", Link: "https://s.shopee.com.br/20tKIBH2mw" },
-  { Id: 22198797147, Nome: "Prateleiras para Banheiro com Suporte e Alto Adesivos – Organizador de Shampoo", Preço: "12.88", Comissão: "0.12", Vendas: 15100, Imagem: "https://cf.shopee.com.br/file/br-11134207-820l9-mn1uzb42hx4yd8", Link: "https://s.shopee.com.br/qhMu2LU9b" },
-  { Id: 23798655797, Nome: "Suporte para Escova de Dentes com Dispensador de Creme Dental", Preço: "14.49", Comissão: "0.08", Vendas: 16273, Imagem: "https://cf.shopee.com.br/file/br-11134207-820lh-mn3pco1qhlac0a", Link: "https://s.shopee.com.br/1BKDIeKDTd" },
-  { Id: 19497995058, Nome: "Escova de Limpeza 9 Em 1 Recarregavél Elétrica Giratória Com Cabo Alongador", Preço: "53.46", Comissão: "0.11", Vendas: 6164, Imagem: "https://cf.shopee.com.br/file/br-11134207-820md-mn3pro2ux69uf2", Link: "https://s.shopee.com.br/5fmcev35M4" },
-  { Id: 23696895359, Nome: "Armário Carrinho Organizador Multiuso Com 4 Camadas Com Rodinhas Cozinha Banheiro", Preço: "41.99", Comissão: "0.08", Vendas: 8372, Imagem: "https://cf.shopee.com.br/file/br-11134207-7r98r-llp2niz8vuwnb6", Link: "https://s.shopee.com.br/3qKyTYA44P" },
-  { Id: 58251788374, Nome: "Ducha Higiênica Para Banheiro Completa Luxo Inox Núcleo Da Válvula De Cobre 1,2m", Preço: "19.9", Comissão: "0.07", Vendas: 7614, Imagem: "https://cf.shopee.com.br/file/br-11134207-81ztc-mkasojuzj3lse5", Link: "https://s.shopee.com.br/2g915PEVRG" },
-  { Id: 22893970041, Nome: "Kit 3 Prateleiras 30cm MDF Luxo Nichos Sala Cozinha Quarto Banheiro", Preço: "19.9", Comissão: "0.13", Vendas: 5274, Imagem: "https://cf.shopee.com.br/file/br-11134207-7r98o-mbgmhgy7lwfsaa", Link: "https://s.shopee.com.br/5AqM404zMn" },
-  { Id: 20897728596, Nome: "Espelho Redondo Adnet Couro Costurado 60cm Sala Quarto Banheiro Hall", Preço: "19.9", Comissão: "0.13", Vendas: 4683, Imagem: "https://cf.shopee.com.br/file/br-11134207-820lg-mlpbs76nr2f9d6", Link: "https://s.shopee.com.br/5L9mGJ4M22" },
-  { Id: 23294540537, Nome: "Kit 4 Sacos de Lixo Perfumados Lavanda | 160 Sacos | Neutraliza Odores", Preço: "29.9", Comissão: "0.15", Vendas: 5437, Imagem: "https://cf.shopee.com.br/file/br-11134207-81z1k-mfyyp9j2nk7bf2", Link: "https://s.shopee.com.br/4fu5T56tNi" },
-  { Id: 18856357121, Nome: "Kit 2 Prateleiras Suporte Com Alto Adesivos Para Parede Banheiro Cozinha", Preço: "18.99", Comissão: "0.07", Vendas: 4627, Imagem: "https://cf.shopee.com.br/file/br-11134207-7r98o-m4et0gt4mdklca", Link: "https://s.shopee.com.br/9AMUpLplFx" },
-  { Id: 22394222996, Nome: "5metros Fita Selante De PVC À Prova D'Água Para Cozinha / Banheiro / Banheira", Preço: "10.1", Comissão: "0.06", Vendas: 5423, Imagem: "https://cf.shopee.com.br/file/br-11134207-7r98o-mcz6oi7s14c299", Link: "https://s.shopee.com.br/7KuqdywjyU" },
-  { Id: 58256810554, Nome: "1 ou 2 Suporte Banheiro Antiferrugem Adesivo Sem Furo Organizador Multiuso Na Parede", Preço: "11.49", Comissão: "0.07", Vendas: 7370, Imagem: "https://cf.shopee.com.br/file/br-11134207-820m8-mlqmel3hubrb47", Link: "https://s.shopee.com.br/3Vi84wBKkN" },
-].map((item) => mapItem(item));
+// ─── DADOS INICIAIS ────────────────────────────────────────────────────────────
+// Carregados via webhook ao abrir o dashboard
+const SEED_PRODUCTS = [];
 
 function mapItem(item) {
   // Suporta tanto campos em inglês (webhook n8n) quanto em português (Google Sheets)
@@ -106,7 +74,7 @@ function bs(bg, color, extra = {}) {
 
 // ─── APP ───────────────────────────────────────────────────────────────────────
 export default function App() {
-  const [products, setProducts]       = useState(SEED_PRODUCTS);
+  const [products, setProducts]       = useState([]);
   const [groups, setGroups]           = useState(INITIAL_GROUPS);
   const [config, setConfig]           = useState(DEFAULT_CONFIG);
   const [tab, setTab]                 = useState("products");
@@ -118,6 +86,7 @@ export default function App() {
   const [toast, setToast]             = useState({ msg: "", visible: false });
   const [webhookLog, setWebhookLog]   = useState([]);
   const [polling, setPolling]         = useState(false);
+  const [loading, setLoading]         = useState(true);
   const [lastPoll, setLastPoll]       = useState(null);
   const [aiLoading, setAiLoading]     = useState({});
 
@@ -138,18 +107,22 @@ export default function App() {
       if (items.length === 0) throw new Error("Webhook retornou lista vazia");
 
       setProducts((prev) => {
+        // 1. Deduplica o próprio array do webhook pelo itemId
+        const seenWebhook = new Set();
+        const uniqueItems = items.filter((item) => {
+          const id = String(item.itemId ?? item["Id"] ?? item.Id ?? "");
+          if (!id || seenWebhook.has(id)) return false;
+          seenWebhook.add(id);
+          return true;
+        });
+
+        // 2. Remove os que já existem no estado atual
         const existingIds = new Set(prev.map((p) => p.id));
-        const seen = new Set();
-        const novos = items
-          .filter((item) => {
-            const id = String(item["Id"] ?? item.Id ?? "");
-            if (seen.has(id) || existingIds.has(id)) return false;
-            seen.add(id);
-            return true;
-          })
+        const novos = uniqueItems
+          .filter((item) => !existingIds.has(String(item.itemId ?? item["Id"] ?? item.Id ?? "")))
           .map(mapItem);
 
-        setWebhookLog((l) => [{ ts: new Date().toLocaleTimeString("pt-BR"), count: novos.length, total: items.length, ok: true }, ...l.slice(0, 19)]);
+        setWebhookLog((l) => [{ ts: new Date().toLocaleTimeString("pt-BR"), count: novos.length, total: uniqueItems.length, ok: true }, ...l.slice(0, 19)]);
         if (novos.length > 0) showToast(`${novos.length} produto(s) novo(s) carregado(s)!`);
         else showToast("Tudo atualizado — nenhum produto novo.");
         return novos.length > 0 ? [...novos, ...prev] : prev;
@@ -161,6 +134,9 @@ export default function App() {
     setPolling(false);
   }, [config.n8nWebhookUrl]);
 
+  useEffect(() => {
+    syncN8n().finally(() => setLoading(false));
+  }, []);
   useEffect(() => { const id = setInterval(syncN8n, 60000); return () => clearInterval(id); }, [syncN8n]);
 
   // ── GERAR IA (OpenAI GPT-4o-mini) ────────────────────────────────────────
@@ -303,6 +279,21 @@ export default function App() {
               </select>
               <button onClick={generateAllAI} style={bs("#185FA5", "#fff")}>🤖 Gerar IA para todos</button>
             </div>
+
+            {/* LOADING / EMPTY / CARDS */}
+            {loading ? (
+              <div style={{ textAlign: "center", padding: "80px 20px", color: "#6b7280" }}>
+                <div style={{ fontSize: 40, marginBottom: 12, animation: "spin 1s linear infinite", display: "inline-block" }}>⟳</div>
+                <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 6 }}>Carregando produtos do n8n...</div>
+                <div style={{ fontSize: 13 }}>Buscando em {config.n8nWebhookUrl}</div>
+              </div>
+            ) : filtered.length === 0 ? (
+              <div style={{ textAlign: "center", padding: "60px 20px", color: "#6b7280" }}>
+                <div style={{ fontSize: 40, marginBottom: 12 }}>🛍️</div>
+                <div style={{ fontSize: 15, fontWeight: 500, marginBottom: 6 }}>Nenhum produto encontrado</div>
+                <button onClick={syncN8n} style={bs("#EE4D2D", "#fff")}>⟳ Sincronizar agora</button>
+              </div>
+            ) : null}
 
             {/* CARDS */}
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(200px,1fr))", gap: 12 }}>
